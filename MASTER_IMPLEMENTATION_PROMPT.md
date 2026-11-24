@@ -39,15 +39,17 @@ dependencies:
   google_fonts: ^6.2.1
 
   # Vector Mascot Animation Engine
-  rive: ^0.13.1
+  rive: ^0.14.11
 
-  # Hybrid AI & Inference Engine
-  google_generative_ai: ^0.4.6
+  # Firebase AI Logic & Inference Engine
+  firebase_ai: ^3.11.0
+  firebase_app_check: ^0.4.3
   http: ^1.2.2
 
   # Offline-First Persistence & Storage
   hive: ^2.2.3
   hive_flutter: ^1.1.0
+  flutter_secure_storage: ^11.2.0
   shared_preferences: ^2.3.2
 
   # Hardware Audio Dictation
@@ -55,8 +57,8 @@ dependencies:
   path_provider: ^2.1.4
 
   # Firebase (Sync & Auth)
-  firebase_core: ^3.6.0
-  firebase_auth: ^5.3.1
+  firebase_core: ^4.7.0
+  firebase_auth: ^6.4.0
   cloud_firestore: ^5.4.4
   firebase_storage: ^12.3.4
 
@@ -229,3 +231,54 @@ At the end of each stage, you must provide:
 2. **Verification Evidence**: Output of `flutter analyze` and `flutter test`.
 3. **Data Flow Validation**: Confirmation that the stage adheres to real data persistence and genuine inference.
 4. **Next Stage Transition**: Explicit handoff to the next numbered stage.
+
+---
+
+## ⚠️ CRITICAL TECHNICAL CORRECTIONS AND IMPLEMENTATION GUARDRAILS
+
+### A. Firebase AI Logic
+- Use the official Flutter Firebase AI Logic package: `firebase_ai` (`firebase_core`, `firebase_app_check`).
+- Do not use standalone `google_generative_ai` as a substitute for Firebase AI Logic.
+- Configure Firebase App Check appropriately.
+- Use supported structured response schemas for AI extraction.
+- Keep AI provider configuration and model selection outside presentation widgets.
+
+### B. Genuine Hybrid Inference
+- Do not assume the Flutter Firebase AI Logic SDK exposes every native hybrid inference capability.
+- First investigate the current supported Flutter, Android, iOS and Web APIs.
+- Use Firebase AI Logic for cloud inference through Dart where supported.
+- If native Android on-device inference is required, investigate a Kotlin implementation using Firebase AI Logic's Android hybrid inference SDK and ML Kit Prompt API, exposed through a well-defined Flutter platform channel.
+- Keep the inference abstraction platform-independent.
+- Record the actual execution source for each request: on-device or cloud.
+- Never display an on-device status unless inference actually ran on-device.
+- Provide an honest fallback when a model or platform is unsupported.
+- Verify hybrid inference on a supported physical device before declaring the feature complete.
+
+### C. Rive Character Asset
+- Create the actual Margo character in Rive Editor.
+- Do not recreate the character using CustomPainter, emoji, generic vector shapes or generated placeholder drawings.
+- Do not fabricate a `.riv` asset or claim Rive integration is complete without a valid exported file.
+- Implement a controller around the actual exported state machine (`rive` / `rive_native`).
+- Gracefully handle missing assets during development without pretending the production mascot is complete.
+
+### D. Persistence and Synchronization
+- Implement local persistence before cloud synchronization.
+- Define a durable operation queue for offline mutations.
+- Implement retry, idempotency, conflict resolution and deletion propagation.
+- Store encryption keys securely if encrypted local storage is enabled (`HiveAesCipher` + `flutter_secure_storage`).
+- Never silently overwrite newer user data during synchronization.
+- Preserve the original journal content separately from AI-generated interpretations and subsequent edits.
+
+### E. Genuine Application Progress
+- Do not use `Future.delayed`, hardcoded keyword responses or fabricated AI processing stages as substitutes for real application functionality.
+- Use actual streaming events or a genuine loading state.
+- Every AI result must be traceable to its source journal entry.
+- Require user confirmation before creating or changing tasks and projects.
+
+### F. Verification
+- Verify each platform independently.
+- Do not claim Android, Web, Windows or iOS support based solely on a successful Flutter compilation for another platform.
+- Run `flutter analyze`, `flutter test` and relevant platform builds.
+- Report existing warnings separately from newly introduced warnings.
+- Never report an integration as complete until its actual end-to-end behaviour has been tested.
+
